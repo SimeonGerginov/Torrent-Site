@@ -1,0 +1,14 @@
+﻿@using Telerik.Sitefinity.UI.MVC
+
+@model SitefinityWebApp.Mvc.Models.TorrentModel
+
+<h1>
+    Create a Torrent
+</h1>
+
+@using (Html.BeginFormSitefinity("CreateTorrent", "TorrentForm"))
+{
+    @Html.EditorForModel()
+
+    <input type="submit" value="Save"/>
+}
