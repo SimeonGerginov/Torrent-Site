@@ -1,7 +1,20 @@
-@model SitefinityWebApp.Mvc.Models.TorrentModel
-<div>
-    @Model.Message
-</div>
+@using Telerik.Sitefinity.DynamicModules.Model;
+@using Telerik.Sitefinity.Model
+
+@model IEnumerable<DynamicContent>
+
+<h1>
+    Torrents
+</h1>
+
+<ul>
+    @foreach (var torrent in @Model)
+    {
+        <li>
+            @Html.ActionLink(torrent.GetString("Title"), "TorrentDetails", new { urlName = torrent.UrlName })
+        </li>
+    }
+</ul>
 
 <div>
     @Html.ActionLink("Create a torrent", "CreateTorrent")

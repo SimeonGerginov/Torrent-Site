@@ -1250,6 +1250,7 @@
     <Content Include="Mvc\Views\Torrent\DesignerView.Simple.cshtml" />
     <Content Include="Mvc\Views\Torrent\Index.cshtml" />
     <Content Include="Mvc\Views\Torrent\TorrentForm.cshtml" />
+    <Content Include="Mvc\Views\Torrent\TorrentDetails.cshtml" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

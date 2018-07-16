@@ -51,12 +51,30 @@ namespace SitefinityWebApp.Mvc.Controllers
 	        }
 	    }
 
+	    public IQueryable<DynamicContent> RetrieveCollectionOfTorrents()
+	    {
+	        var myCollection = this.dynamicModuleManager
+	            .GetDataItems(torrentType)
+	            .Where(t => t.Status == ContentLifecycleStatus.Live && t.Visible == true);
+
+	        return myCollection;
+        }
+
         public ActionResult Index()
-		{
-			var model = new TorrentModel();
-			model.Message = this.Message;
-			return View(model);
-		}
+        {
+            var torrents = this.RetrieveCollectionOfTorrents().AsEnumerable();
+
+            return this.View("Index", torrents);
+        }
+
+	    public ActionResult TorrentDetails(string urlName)
+	    {
+	        var torrent = this.RetrieveCollectionOfTorrents()
+	            .Where(t => t.UrlName == urlName)
+	            .SingleOrDefault();
+
+	        return this.View("TorrentDetails", torrent);
+	    }
 
         [HttpGet]
 	    public ActionResult CreateTorrent()
@@ -96,9 +114,7 @@ namespace SitefinityWebApp.Mvc.Controllers
             versionManager.CreateVersion(torrentItem, false);
             TransactionManager.CommitTransaction(transactionName);
 
-	        return this.RedirectToAction("Index");
+	        return this.RedirectToAction("TorrentDetails", new { urlName = torrentItem.UrlName });
 	    }
-
-        public string Message { get; set; }
 	}
 }

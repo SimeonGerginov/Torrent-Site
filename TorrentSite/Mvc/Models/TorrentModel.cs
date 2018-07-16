@@ -5,8 +5,6 @@ namespace SitefinityWebApp.Mvc.Models
 {
     public class TorrentModel
 	{
-		public string Message { get; set; }
-
 	    public string Title { get; set; }
 
         [DataType(DataType.MultilineText)]
