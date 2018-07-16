@@ -7,14 +7,19 @@
     Torrents
 </h1>
 
+<br/>
+
 <ul>
     @foreach (var torrent in @Model)
     {
         <li>
             @Html.ActionLink(torrent.GetString("Title"), "TorrentDetails", new { urlName = torrent.UrlName })
         </li>
+        <br />
     }
 </ul>
+
+<br/>
 
 <div>
     @Html.ActionLink("Create a torrent", "CreateTorrent")

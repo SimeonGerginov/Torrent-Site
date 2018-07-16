@@ -6,3 +6,23 @@
 <h1>
     @Html.Raw(Model.GetString("Title"))
 </h1>
+
+<br />
+
+<div>
+    <p>
+        @Html.Raw(Model.GetString("Description"))
+    </p>
+    <br />
+    <p>
+        @Html.Raw(Model.GetString("AdditionalInfo"))
+    </p>
+    <br />
+    <p>
+        @Html.Raw(Model.GetString("Genre"))
+    </p>
+    <br />
+    <a href="https://@Model.GetString("DownloadLink")">
+        Download Link
+    </a>
+</div>

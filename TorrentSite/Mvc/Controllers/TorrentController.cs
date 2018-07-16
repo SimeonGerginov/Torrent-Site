@@ -21,25 +21,8 @@ namespace SitefinityWebApp.Mvc.Controllers
     [ControllerToolboxItem(Name = "Torrent_MVC", Title = "Torrent", SectionName = "CustomWidgets")]
 	public class TorrentController : Controller
     {
-        private string transactionName;
         private readonly Type torrentType = TypeResolutionService.ResolveType("Telerik.Sitefinity.DynamicTypes.Model.Torrents.Torrent");
-	    private DynamicModuleManager dynamicModuleManager;
 	    private LibrariesManager imageManager;
-        private VersionManager versionManager;
-
-        public DynamicModuleManager DynamicModuleManager
-	    {
-	        get
-	        {
-	            if (this.dynamicModuleManager == null || 
-	                this.dynamicModuleManager.TransactionName != this.transactionName)
-	            {
-	                this.dynamicModuleManager = DynamicModuleManager.GetManager(string.Empty, transactionName);
-	            }
-
-	            return this.dynamicModuleManager;
-	        }
-	    }
 
 	    public LibrariesManager ImageManager
 	    {
@@ -54,22 +37,12 @@ namespace SitefinityWebApp.Mvc.Controllers
 	        }
 	    }
 
-        public VersionManager VersionManager
-        {
-            get
-            {
-                if (this.versionManager == null || this.versionManager.TransactionName != this.transactionName)
-                {
-                    this.versionManager = VersionManager.GetManager(null, transactionName);
-                }
-
-                return this.versionManager;
-            }
-        }
-
 	    public IQueryable<DynamicContent> RetrieveCollectionOfTorrents()
 	    {
-	        var myCollection = this.DynamicModuleManager
+	        var transactionName = "GetTorrents" + Guid.NewGuid();
+	        var dynamicModuleManager = DynamicModuleManager.GetManager(string.Empty, transactionName);
+
+            var myCollection = dynamicModuleManager
 	            .GetDataItems(torrentType)
 	            .Where(t => t.Status == ContentLifecycleStatus.Live && t.Visible == true);
 
@@ -83,15 +56,6 @@ namespace SitefinityWebApp.Mvc.Controllers
             return this.View("Index", torrents);
         }
 
-	    public ActionResult TorrentDetails(string urlName)
-	    {
-	        var torrent = this.RetrieveCollectionOfTorrents()
-	            .Where(t => t.UrlName == urlName)
-	            .SingleOrDefault();
-
-	        return this.View("TorrentDetails", torrent);
-	    }
-
         [HttpGet]
 	    public ActionResult CreateTorrent()
 	    {
@@ -103,9 +67,11 @@ namespace SitefinityWebApp.Mvc.Controllers
 	    [HttpPost]
 	    public ActionResult CreateTorrent(TorrentModel torrentModel)
 	    {
-	        this.transactionName = "Transaction" + torrentModel.Title;
+	        var transactionName = "CreateTorrent" + Guid.NewGuid();
+	        var versionManager = VersionManager.GetManager(string.Empty, transactionName);
+	        var dynamicModuleManager = DynamicModuleManager.GetManager(string.Empty, transactionName);
 
-            DynamicContent torrentItem = this.DynamicModuleManager.CreateDataItem(torrentType);
+            DynamicContent torrentItem = dynamicModuleManager.CreateDataItem(torrentType);
             
             torrentItem.SetValue("Title", torrentModel.Title);
             torrentItem.SetValue("Description", torrentModel.Description);
@@ -122,14 +88,24 @@ namespace SitefinityWebApp.Mvc.Controllers
             {
                 torrentItem.CreateRelation(imageItem, "Image");
             }
-            
+
+	        torrentItem.SetString("UrlName", torrentModel.Title);
             torrentItem.SetValue("Owner", SecurityManager.GetCurrentUserId());
             torrentItem.SetValue("PublicationDate", DateTime.UtcNow);
 
-            this.VersionManager.CreateVersion(torrentItem, false);
-            TransactionManager.CommitTransaction(this.transactionName);
+            versionManager.CreateVersion(torrentItem, false);
+            TransactionManager.CommitTransaction(transactionName);
 
 	        return this.RedirectToAction("TorrentDetails", new { urlName = torrentItem.UrlName });
 	    }
-	}
+
+        public ActionResult TorrentDetails(string urlName)
+        {
+            var torrent = this.RetrieveCollectionOfTorrents()
+                .Where(t => t.UrlName == urlName)
+                .SingleOrDefault();
+
+            return this.View("TorrentDetails", torrent);
+        }
+    }
 }
