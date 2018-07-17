@@ -1232,7 +1232,6 @@
     <Content Include="web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Mvc\Views\Shared\readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\RadSpell\de-DE.tdf" />
@@ -1241,6 +1240,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Sitefinity\" />
+    <Folder Include="Mvc\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App_Data\GeoLocation\GeoLiteCity.dat" />
