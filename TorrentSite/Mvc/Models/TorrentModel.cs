@@ -1,4 +1,7 @@
+using System;
 using System.ComponentModel.DataAnnotations;
+
+using Telerik.Sitefinity.Libraries.Model;
 
 namespace SitefinityWebApp.Mvc.Models
 {
@@ -15,5 +18,9 @@ namespace SitefinityWebApp.Mvc.Models
 	    public string DownloadLink { get; set; }
 
 	    public string Genre { get; set; }
+
+	    public DateTime TorrentDateCreated { get; set; }
+
+	    public Image Image { get; set; }
 	}
 }

@@ -4,7 +4,6 @@ using System.Web.Mvc;
 
 using SitefinityWebApp.Mvc.Models;
 
-using Telerik.Sitefinity.Data;
 using Telerik.Sitefinity.DynamicModules;
 using Telerik.Sitefinity.DynamicModules.Model;
 using Telerik.Sitefinity.GenericContent.Model;
@@ -13,8 +12,8 @@ using Telerik.Sitefinity.Modules.Libraries;
 using Telerik.Sitefinity.Mvc;
 using Telerik.Sitefinity.RelatedData;
 using Telerik.Sitefinity.Security;
+using Telerik.Sitefinity.Security.Claims;
 using Telerik.Sitefinity.Utilities.TypeConverters;
-using Telerik.Sitefinity.Versioning;
 
 namespace SitefinityWebApp.Mvc.Controllers
 {
@@ -22,9 +21,23 @@ namespace SitefinityWebApp.Mvc.Controllers
 	public class TorrentController : Controller
     {
         private readonly Type torrentType = TypeResolutionService.ResolveType("Telerik.Sitefinity.DynamicTypes.Model.Torrents.Torrent");
+        private DynamicModuleManager dynamicModuleManager;
 	    private LibrariesManager imageManager;
 
-	    public LibrariesManager ImageManager
+        public DynamicModuleManager DynamicModuleManager
+        {
+            get
+            {
+                if (this.dynamicModuleManager == null)
+                {
+                    this.dynamicModuleManager = DynamicModuleManager.GetManager();
+                }
+
+                return this.dynamicModuleManager;
+            }
+        }
+
+        public LibrariesManager ImageManager
 	    {
 	        get
 	        {
@@ -39,10 +52,7 @@ namespace SitefinityWebApp.Mvc.Controllers
 
 	    public IQueryable<DynamicContent> RetrieveCollectionOfTorrents()
 	    {
-	        var transactionName = "GetTorrents" + Guid.NewGuid();
-	        var dynamicModuleManager = DynamicModuleManager.GetManager(string.Empty, transactionName);
-
-            var myCollection = dynamicModuleManager
+            var myCollection = this.DynamicModuleManager
 	            .GetDataItems(torrentType)
 	            .Where(t => t.Status == ContentLifecycleStatus.Live && t.Visible == true);
 
@@ -58,8 +68,15 @@ namespace SitefinityWebApp.Mvc.Controllers
 
         [HttpGet]
 	    public ActionResult CreateTorrent()
-	    {
-            TorrentModel torrentModel = new TorrentModel();
+        {
+            var identity = ClaimsManager.GetCurrentIdentity();
+
+            if (!identity.IsAuthenticated)
+            {
+                this.RedirectToAction("Index");
+            }
+
+            var torrentModel = new TorrentModel();
 
 	        return this.View("TorrentForm", torrentModel);
 	    }
@@ -67,11 +84,7 @@ namespace SitefinityWebApp.Mvc.Controllers
 	    [HttpPost]
 	    public ActionResult CreateTorrent(TorrentModel torrentModel)
 	    {
-	        var transactionName = "CreateTorrent" + Guid.NewGuid();
-	        var versionManager = VersionManager.GetManager(string.Empty, transactionName);
-	        var dynamicModuleManager = DynamicModuleManager.GetManager(string.Empty, transactionName);
-
-            DynamicContent torrentItem = dynamicModuleManager.CreateDataItem(torrentType);
+            DynamicContent torrentItem = this.DynamicModuleManager.CreateDataItem(torrentType);
             
             torrentItem.SetValue("Title", torrentModel.Title);
             torrentItem.SetValue("Description", torrentModel.Description);
@@ -92,9 +105,10 @@ namespace SitefinityWebApp.Mvc.Controllers
 	        torrentItem.SetString("UrlName", torrentModel.Title);
             torrentItem.SetValue("Owner", SecurityManager.GetCurrentUserId());
             torrentItem.SetValue("PublicationDate", DateTime.UtcNow);
+	        torrentItem.ApprovalWorkflowState = "Published";
 
-            versionManager.CreateVersion(torrentItem, false);
-            TransactionManager.CommitTransaction(transactionName);
+	        this.DynamicModuleManager.Lifecycle.Publish(torrentItem);
+            this.DynamicModuleManager.SaveChanges();
 
 	        return this.RedirectToAction("TorrentDetails", new { urlName = torrentItem.UrlName });
 	    }
