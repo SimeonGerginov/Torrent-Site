@@ -22,7 +22,11 @@
         @Html.Raw(Model.GetString("Genre"))
     </p>
     <br />
-    <a href="https://@Model.GetString("DownloadLink")">
-        Download Link
-    </a>
+    <p>
+        @Html.Raw(Model.GetString("TorrentDateCreated"))
+    </p>
+    <br />
+    <div>
+        @Html.ActionLink("Download Torrent", "DownloadTorrent", "Torrent", null, new { fileName = Model.GetString("Title"), fileType = Model.GetString("FileType") })
+    </div>
 </div>

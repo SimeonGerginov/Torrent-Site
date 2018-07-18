@@ -114,5 +114,22 @@ namespace SitefinityWebApp.Mvc.Controllers
 
             return this.View("TorrentDetails", torrent);
         }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult DownloadTorrent(string fileName, string fileType)
+        {
+            var user = ClaimsManager.GetCurrentIdentity();
+            var isUserAuthenticated = this.userService.CheckIfUserIsAuthenticated(user);
+
+            if (!isUserAuthenticated)
+            {
+                return this.RedirectToAction("Index");
+            }
+
+            var file = Common.Constants.StorageFolder + fileName;
+
+            return File(file, fileType, System.IO.Path.GetFileName(file));
+        }
     }
 }

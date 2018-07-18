@@ -29,7 +29,6 @@ namespace SitefinityWebApp.Mvc.Services
             torrentItem.SetValue("Title", torrentModel.Title);
             torrentItem.SetValue("Description", torrentModel.Description);
             torrentItem.SetValue("AdditionalInfo", torrentModel.AdditionalInfo);
-            torrentItem.SetValue("DownloadLink", torrentModel.Title);
             torrentItem.SetValue("Genre", torrentModel.Genre);
             torrentItem.SetValue("TorrentDateCreated", DateTime.UtcNow);
 
@@ -60,6 +59,7 @@ namespace SitefinityWebApp.Mvc.Services
 
             if (torrentFileItem != null)
             {
+                torrentFileItem.SetValue("FileType", torrentFileItem.MimeType);
                 torrentItem.CreateRelation(torrentFileItem, "TorrentFile");
             }
         }

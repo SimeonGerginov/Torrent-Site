@@ -4,5 +4,7 @@
     {
         public const string ModeratorRole = "Moderators (torrents)";
         public const string ProviderOfRoles = "AppRoles";
+
+        public const string StorageFolder = "~\\App_Data\\Storage\\FileSystem\\";
     }
 }
