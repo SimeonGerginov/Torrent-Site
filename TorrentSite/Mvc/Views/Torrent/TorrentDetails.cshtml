@@ -10,6 +10,10 @@
 <br />
 
 <div>
+    <div>
+        @Html.ActionLink("Download Torrent", "DownloadTorrent", "Torrent", null, new { fileName = Model.GetString("Title"), fileType = Model.GetString("FileType") })
+    </div>
+    <br />
     <p>
         @Html.Raw(Model.GetString("Description"))
     </p>
@@ -25,8 +29,4 @@
     <p>
         @Html.Raw(Model.GetString("TorrentDateCreated"))
     </p>
-    <br />
-    <div>
-        @Html.ActionLink("Download Torrent", "DownloadTorrent", "Torrent", null, new { fileName = Model.GetString("Title"), fileType = Model.GetString("FileType") })
-    </div>
 </div>

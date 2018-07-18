@@ -20,5 +20,7 @@ namespace SitefinityWebApp.Mvc.Services.Contracts
         void SetTorrentFile(LibrariesManager torrentManager, DynamicContent torrentItem);
 
         DynamicContent GetTorrent(DynamicModuleManager dynamicModuleManager, Type torrentType, string urlName);
+
+        string GetTorrentFile(string fileName, string fileType);
     }
 }

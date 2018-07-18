@@ -71,5 +71,25 @@ namespace SitefinityWebApp.Mvc.Services
 
             return torrent;
         }
+
+        public string GetTorrentFile(string fileName, string fileType)
+        {
+            string file = null;
+
+            if (fileType.Contains("pdf"))
+            {
+                file = Common.Constants.StorageFolder + fileName + Common.Constants.PdfExtension;
+            }
+            else if (fileType.Contains("powerpoint"))
+            {
+                file = Common.Constants.StorageFolder + fileName + Common.Constants.PowerPointExtension;
+            }
+            else if (fileType.Contains("msword"))
+            {
+                file = Common.Constants.StorageFolder + fileName + Common.Constants.WordExtension;
+            }
+
+            return file;
+        }
     }
 }

@@ -127,7 +127,7 @@ namespace SitefinityWebApp.Mvc.Controllers
                 return this.RedirectToAction("Index");
             }
 
-            var file = Common.Constants.StorageFolder + fileName;
+            var file = this.torrentService.GetTorrentFile(fileName, fileType);
 
             return File(file, fileType, System.IO.Path.GetFileName(file));
         }

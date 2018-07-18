@@ -1,3 +1,5 @@
+@using SitefinityWebApp.Mvc.Common
+
 @using Telerik.Sitefinity.DynamicModules.Model;
 @using Telerik.Sitefinity.Model
 
@@ -21,6 +23,12 @@
 
 <br/>
 
-<div>
-    @Html.ActionLink("Create a torrent", "CreateTorrent")
-</div>
+@if (this.Request.IsAuthenticated)
+{
+    if (this.User.IsInRole(Constants.ModeratorRole))
+    {
+        <div>
+            @Html.ActionLink("Create a torrent", "CreateTorrent")
+        </div>
+    }
+}
