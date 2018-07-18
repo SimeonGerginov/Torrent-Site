@@ -1118,6 +1118,8 @@
     <Compile Include="AzureWebRole.cs" />
     <Compile Include="Mvc\Controllers\TorrentController.cs" />
     <Compile Include="Mvc\Models\TorrentModel.cs" />
+    <Compile Include="Mvc\Providers\DynamicModuleManagerProvider.cs" />
+    <Compile Include="Mvc\Providers\ImageManagerProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
