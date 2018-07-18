@@ -1,0 +1,32 @@
+﻿@using Telerik.Sitefinity.DynamicModules.Model
+@using Telerik.Sitefinity.Model
+
+@model DynamicContent
+    
+<h1>
+    @Html.Raw(Model.GetString("Title"))
+</h1>
+
+<br />
+
+<div>
+    <div>
+        @Html.ActionLink("Download Torrent", "DownloadTorrent", "Torrent", null, new { fileName = Model.GetString("Title"), fileType = Model.GetString("FileType") })
+    </div>
+    <br />
+    <p>
+        @Html.Raw(Model.GetString("Description"))
+    </p>
+    <br />
+    <p>
+        @Html.Raw(Model.GetString("AdditionalInfo"))
+    </p>
+    <br />
+    <p>
+        @Html.Raw(Model.GetString("Genre"))
+    </p>
+    <br />
+    <p>
+        @Html.Raw(Model.GetString("TorrentDateCreated"))
+    </p>
+</div>

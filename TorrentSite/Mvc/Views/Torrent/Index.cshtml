@@ -1,0 +1,34 @@
+@using SitefinityWebApp.Mvc.Common
+
+@using Telerik.Sitefinity.DynamicModules.Model;
+@using Telerik.Sitefinity.Model
+
+@model IEnumerable<DynamicContent>
+
+<h1>
+    Torrents
+</h1>
+
+<br/>
+
+<ul>
+    @foreach (var torrent in @Model)
+    {
+        <li>
+            @Html.ActionLink(torrent.GetString("Title"), "TorrentDetails", new { urlName = torrent.UrlName })
+        </li>
+        <br />
+    }
+</ul>
+
+<br/>
+
+@if (this.Request.IsAuthenticated)
+{
+    if (this.User.IsInRole(Constants.ModeratorRole))
+    {
+        <div>
+            @Html.ActionLink("Create a torrent", "CreateTorrent")
+        </div>
+    }
+}

@@ -1,0 +1,52 @@
+﻿@using Telerik.Sitefinity.UI.MVC
+
+@model SitefinityWebApp.Mvc.Models.CreateTorrentModel
+
+<h1>
+    Create a Torrent
+</h1>
+
+@using (Html.BeginFormSitefinity("CreateTorrent", "TorrentForm"))
+{
+    <div>
+        <label>
+            @Html.LabelFor(t => t.Title)
+        </label>
+        <div>
+            @Html.EditorFor(t => t.Title,
+                new { htmlAttributes = new { placeholder = "Torrent title", required = true }})
+        </div>
+    </div>
+
+    <div>
+        <label>
+            @Html.LabelFor(t => t.Description)
+        </label>
+        <div>
+            @Html.EditorFor(t => t.Description,
+                new { htmlAttributes = new { placeholder = "Torrent description", required = true }})
+        </div>
+    </div>
+
+    <div>
+        <label>
+            @Html.LabelFor(t => t.AdditionalInfo)
+        </label>
+        <div>
+            @Html.EditorFor(t => t.AdditionalInfo,
+                new { htmlAttributes = new { placeholder = "Torrent additional info", required = true }})
+        </div>
+    </div>
+
+    <div>
+        <label>
+            @Html.LabelFor(t => t.Genre)
+        </label>
+        <div>
+            @Html.EditorFor(t => t.Genre,
+                new { htmlAttributes = new { placeholder = "Torrent genre", required = true }})
+        </div>
+    </div>
+
+    <input type="submit" value="Save" />
+}
