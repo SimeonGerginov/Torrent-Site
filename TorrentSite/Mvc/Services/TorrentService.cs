@@ -8,6 +8,8 @@ using Telerik.Sitefinity.DynamicModules;
 using Telerik.Sitefinity.DynamicModules.Model;
 using Telerik.Sitefinity.GenericContent.Model;
 using Telerik.Sitefinity.Model;
+using Telerik.Sitefinity.Modules.Libraries;
+using Telerik.Sitefinity.RelatedData;
 
 namespace SitefinityWebApp.Mvc.Services
 {
@@ -36,6 +38,30 @@ namespace SitefinityWebApp.Mvc.Services
             torrentItem.SetValue("Owner", currentUserId);
 
             torrentItem.ApprovalWorkflowState = "Published";
+        }
+
+        public void SetTorrentImage(LibrariesManager imageManager, DynamicContent torrentItem)
+        {
+            var imageItem = imageManager
+                .GetImages()
+                .FirstOrDefault(i => i.Status == ContentLifecycleStatus.Master);
+
+            if (imageItem != null)
+            {
+                torrentItem.CreateRelation(imageItem, "Image");
+            }
+        }
+
+        public void SetTorrentFile(LibrariesManager torrentManager, DynamicContent torrentItem)
+        {
+            var torrentFileItem = torrentManager
+                .GetDocuments()
+                .FirstOrDefault(i => i.Status == ContentLifecycleStatus.Master);
+
+            if (torrentFileItem != null)
+            {
+                torrentItem.CreateRelation(torrentFileItem, "TorrentFile");
+            }
         }
 
         public DynamicContent GetTorrent(DynamicModuleManager dynamicModuleManager, Type torrentType, string urlName)

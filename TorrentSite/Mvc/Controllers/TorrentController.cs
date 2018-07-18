@@ -7,9 +7,7 @@ using SitefinityWebApp.Mvc.Providers;
 using SitefinityWebApp.Mvc.Services;
 using SitefinityWebApp.Mvc.Services.Contracts;
 
-using Telerik.Sitefinity.GenericContent.Model;
 using Telerik.Sitefinity.Mvc;
-using Telerik.Sitefinity.RelatedData;
 using Telerik.Sitefinity.Security;
 using Telerik.Sitefinity.Security.Claims;
 using Telerik.Sitefinity.Utilities.TypeConverters;
@@ -23,6 +21,7 @@ namespace SitefinityWebApp.Mvc.Controllers
 
         private readonly DynamicModuleManagerProvider dynamicModuleManagerProvider;
         private readonly ImageManagerProvider imageManagerProvider;
+        private readonly TorrentManagerProvider torrentManagerProvider;
 
         private readonly ITorrentService torrentService;
         private readonly IUserService userService;
@@ -31,6 +30,7 @@ namespace SitefinityWebApp.Mvc.Controllers
         {
             this.dynamicModuleManagerProvider = new DynamicModuleManagerProvider();
             this.imageManagerProvider = new ImageManagerProvider();
+            this.torrentManagerProvider = new TorrentManagerProvider();
 
             this.torrentService = new TorrentService();
             this.userService = new UserService();
@@ -81,20 +81,14 @@ namespace SitefinityWebApp.Mvc.Controllers
 	        }
 
             var dynamicModuleManager = this.dynamicModuleManagerProvider.DynamicModuleManager;
+	        var imageManager = this.imageManagerProvider.ImageManager;
+	        var torrentManager = this.torrentManagerProvider.TorrentManager;
             var torrentItem = dynamicModuleManager.CreateDataItem(torrentType);
 	        var currentUserId = SecurityManager.GetCurrentUserId();
 
             this.torrentService.SetTorrentValues(torrentItem, torrentModel, currentUserId);
-
-	        var imageManager = this.imageManagerProvider.ImageManager;
-            var imageItem = imageManager
-                .GetImages()
-                .FirstOrDefault(i => i.Status == ContentLifecycleStatus.Master);
-
-            if (imageItem != null)
-            {
-                torrentItem.CreateRelation(imageItem, "Image");
-            }
+            this.torrentService.SetTorrentImage(imageManager, torrentItem);
+            this.torrentService.SetTorrentFile(torrentManager, torrentItem);
 
 	        dynamicModuleManager.Lifecycle.Publish(torrentItem);
             dynamicModuleManager.SaveChanges();
