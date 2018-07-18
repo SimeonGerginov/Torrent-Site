@@ -20,15 +20,20 @@ namespace SitefinityWebApp.Mvc.Controllers
 	public class TorrentController : Controller
     {
         private readonly Type torrentType = TypeResolutionService.ResolveType("Telerik.Sitefinity.DynamicTypes.Model.Torrents.Torrent");
+
         private readonly DynamicModuleManagerProvider dynamicModuleManagerProvider;
         private readonly ImageManagerProvider imageManagerProvider;
+
         private readonly ITorrentService torrentService;
+        private readonly IUserService userService;
 
         public TorrentController()
         {
             this.dynamicModuleManagerProvider = new DynamicModuleManagerProvider();
             this.imageManagerProvider = new ImageManagerProvider();
+
             this.torrentService = new TorrentService();
+            this.userService = new UserService();
         }
 
         [HttpGet]
@@ -48,11 +53,13 @@ namespace SitefinityWebApp.Mvc.Controllers
         [Authorize]
 	    public ActionResult CreateTorrent()
         {
-            var identity = ClaimsManager.GetCurrentIdentity();
+            var user = ClaimsManager.GetCurrentIdentity();
+            var isUserAuthenticated = this.userService.CheckIfUserIsAuthenticated(user);
+            var isUserModerator = this.userService.CheckIfUserIsModerator(user);
 
-            if (!identity.IsAuthenticated)
+            if (!isUserAuthenticated || !isUserModerator)
             {
-                this.RedirectToAction("Index");
+                return this.RedirectToAction("Index");
             }
 
             var torrentModel = new TorrentModel();
@@ -64,7 +71,16 @@ namespace SitefinityWebApp.Mvc.Controllers
         [Authorize]
 	    public ActionResult CreateTorrent(TorrentModel torrentModel)
 	    {
-	        var dynamicModuleManager = this.dynamicModuleManagerProvider.DynamicModuleManager;
+	        var user = ClaimsManager.GetCurrentIdentity();
+	        var isUserAuthenticated = this.userService.CheckIfUserIsAuthenticated(user);
+	        var isUserModerator = this.userService.CheckIfUserIsModerator(user);
+
+	        if (!isUserAuthenticated || !isUserModerator)
+	        {
+	            return this.RedirectToAction("Index");
+	        }
+
+            var dynamicModuleManager = this.dynamicModuleManagerProvider.DynamicModuleManager;
             var torrentItem = dynamicModuleManager.CreateDataItem(torrentType);
 	        var currentUserId = SecurityManager.GetCurrentUserId();
 
@@ -90,6 +106,14 @@ namespace SitefinityWebApp.Mvc.Controllers
         [Authorize]
         public ActionResult TorrentDetails(string urlName)
         {
+            var user = ClaimsManager.GetCurrentIdentity();
+            var isUserAuthenticated = this.userService.CheckIfUserIsAuthenticated(user);
+
+            if (!isUserAuthenticated)
+            {
+                return this.RedirectToAction("Index");
+            }
+
             var dynamicModuleManager = this.dynamicModuleManagerProvider.DynamicModuleManager;
 
             var torrent = this.torrentService.GetTorrent(dynamicModuleManager, this.torrentType, urlName);
