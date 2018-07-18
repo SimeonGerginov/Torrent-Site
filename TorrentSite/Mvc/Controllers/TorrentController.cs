@@ -62,14 +62,14 @@ namespace SitefinityWebApp.Mvc.Controllers
                 return this.RedirectToAction("Index");
             }
 
-            var torrentModel = new TorrentModel();
+            var torrentModel = new CreateTorrentModel();
 
 	        return this.View("TorrentForm", torrentModel);
 	    }
 
 	    [HttpPost]
         [Authorize]
-	    public ActionResult CreateTorrent(TorrentModel torrentModel)
+	    public ActionResult CreateTorrent(CreateTorrentModel torrentModel)
 	    {
 	        var user = ClaimsManager.GetCurrentIdentity();
 	        var isUserAuthenticated = this.userService.CheckIfUserIsAuthenticated(user);

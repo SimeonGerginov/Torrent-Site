@@ -12,7 +12,7 @@ namespace SitefinityWebApp.Mvc.Services.Contracts
     {
         IQueryable<DynamicContent> RetrieveCollectionOfTorrents(DynamicModuleManager dynamicModuleManager, Type torrentType);
 
-        void SetTorrentValues(DynamicContent torrentItem, TorrentModel torrentModel, Guid currentUserId);
+        void SetTorrentValues(DynamicContent torrentItem, CreateTorrentModel torrentModel, Guid currentUserId);
 
         DynamicContent GetTorrent(DynamicModuleManager dynamicModuleManager, Type torrentType, string urlName);
     }

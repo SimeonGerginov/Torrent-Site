@@ -1118,7 +1118,7 @@
     <Compile Include="AzureWebRole.cs" />
     <Compile Include="Mvc\Common\Constants.cs" />
     <Compile Include="Mvc\Controllers\TorrentController.cs" />
-    <Compile Include="Mvc\Models\TorrentModel.cs" />
+    <Compile Include="Mvc\Models\CreateTorrentModel.cs" />
     <Compile Include="Mvc\Providers\DynamicModuleManagerProvider.cs" />
     <Compile Include="Mvc\Providers\ImageManagerProvider.cs" />
     <Compile Include="Mvc\Services\Contracts\ITorrentService.cs" />

@@ -22,12 +22,12 @@ namespace SitefinityWebApp.Mvc.Services
             return myCollection;
         }
 
-        public void SetTorrentValues(DynamicContent torrentItem, TorrentModel torrentModel, Guid currentUserId)
+        public void SetTorrentValues(DynamicContent torrentItem, CreateTorrentModel torrentModel, Guid currentUserId)
         {
             torrentItem.SetValue("Title", torrentModel.Title);
             torrentItem.SetValue("Description", torrentModel.Description);
             torrentItem.SetValue("AdditionalInfo", torrentModel.AdditionalInfo);
-            torrentItem.SetValue("DownloadLink", torrentModel.DownloadLink);
+            torrentItem.SetValue("DownloadLink", torrentModel.Title);
             torrentItem.SetValue("Genre", torrentModel.Genre);
             torrentItem.SetValue("TorrentDateCreated", DateTime.UtcNow);
 
