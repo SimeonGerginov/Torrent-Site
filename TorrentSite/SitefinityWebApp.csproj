@@ -1120,6 +1120,8 @@
     <Compile Include="Mvc\Models\TorrentModel.cs" />
     <Compile Include="Mvc\Providers\DynamicModuleManagerProvider.cs" />
     <Compile Include="Mvc\Providers\ImageManagerProvider.cs" />
+    <Compile Include="Mvc\Services\Contracts\ITorrentService.cs" />
+    <Compile Include="Mvc\Services\TorrentService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

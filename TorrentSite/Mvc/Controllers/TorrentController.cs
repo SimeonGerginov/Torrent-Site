@@ -4,10 +4,10 @@ using System.Web.Mvc;
 
 using SitefinityWebApp.Mvc.Models;
 using SitefinityWebApp.Mvc.Providers;
+using SitefinityWebApp.Mvc.Services;
+using SitefinityWebApp.Mvc.Services.Contracts;
 
-using Telerik.Sitefinity.DynamicModules.Model;
 using Telerik.Sitefinity.GenericContent.Model;
-using Telerik.Sitefinity.Model;
 using Telerik.Sitefinity.Mvc;
 using Telerik.Sitefinity.RelatedData;
 using Telerik.Sitefinity.Security;
@@ -22,17 +22,24 @@ namespace SitefinityWebApp.Mvc.Controllers
         private readonly Type torrentType = TypeResolutionService.ResolveType("Telerik.Sitefinity.DynamicTypes.Model.Torrents.Torrent");
         private readonly DynamicModuleManagerProvider dynamicModuleManagerProvider;
         private readonly ImageManagerProvider imageManagerProvider;
+        private readonly ITorrentService torrentService;
 
         public TorrentController()
         {
             this.dynamicModuleManagerProvider = new DynamicModuleManagerProvider();
             this.imageManagerProvider = new ImageManagerProvider();
+            this.torrentService = new TorrentService();
         }
 
+        [HttpGet]
         [Authorize]
         public ActionResult Index()
         {
-            var torrents = this.RetrieveCollectionOfTorrents().AsEnumerable();
+            var dynamicModuleManager = this.dynamicModuleManagerProvider.DynamicModuleManager;
+
+            var torrents = this.torrentService
+                .RetrieveCollectionOfTorrents(dynamicModuleManager, this.torrentType)
+                .AsEnumerable();
 
             return this.View("Index", torrents);
         }
@@ -58,15 +65,10 @@ namespace SitefinityWebApp.Mvc.Controllers
 	    public ActionResult CreateTorrent(TorrentModel torrentModel)
 	    {
 	        var dynamicModuleManager = this.dynamicModuleManagerProvider.DynamicModuleManager;
+            var torrentItem = dynamicModuleManager.CreateDataItem(torrentType);
+	        var currentUserId = SecurityManager.GetCurrentUserId();
 
-            DynamicContent torrentItem = dynamicModuleManager.CreateDataItem(torrentType);
-            
-            torrentItem.SetValue("Title", torrentModel.Title);
-            torrentItem.SetValue("Description", torrentModel.Description);
-            torrentItem.SetValue("AdditionalInfo", torrentModel.AdditionalInfo);
-            torrentItem.SetValue("DownloadLink", torrentModel.DownloadLink);
-            torrentItem.SetValue("Genre", torrentModel.Genre);
-            torrentItem.SetValue("TorrentDateCreated", DateTime.UtcNow);
+            this.torrentService.SetTorrentValues(torrentItem, torrentModel, currentUserId);
 
 	        var imageManager = this.imageManagerProvider.ImageManager;
             var imageItem = imageManager
@@ -78,36 +80,21 @@ namespace SitefinityWebApp.Mvc.Controllers
                 torrentItem.CreateRelation(imageItem, "Image");
             }
 
-	        torrentItem.SetString("UrlName", torrentModel.Title);
-            torrentItem.SetValue("Owner", SecurityManager.GetCurrentUserId());
-            torrentItem.SetValue("PublicationDate", DateTime.UtcNow);
-	        torrentItem.ApprovalWorkflowState = "Published";
-
 	        dynamicModuleManager.Lifecycle.Publish(torrentItem);
             dynamicModuleManager.SaveChanges();
 
 	        return this.RedirectToAction("TorrentDetails", new { urlName = torrentItem.UrlName });
 	    }
 
+        [HttpGet]
         [Authorize]
         public ActionResult TorrentDetails(string urlName)
         {
-            var torrent = this.RetrieveCollectionOfTorrents()
-                .Where(t => t.UrlName == urlName)
-                .SingleOrDefault();
-
-            return this.View("TorrentDetails", torrent);
-        }
-
-        private IQueryable<DynamicContent> RetrieveCollectionOfTorrents()
-        {
             var dynamicModuleManager = this.dynamicModuleManagerProvider.DynamicModuleManager;
 
-            var myCollection = dynamicModuleManager
-                .GetDataItems(torrentType)
-                .Where(t => t.Status == ContentLifecycleStatus.Live && t.Visible == true);
+            var torrent = this.torrentService.GetTorrent(dynamicModuleManager, this.torrentType, urlName);
 
-            return myCollection;
+            return this.View("TorrentDetails", torrent);
         }
     }
 }
